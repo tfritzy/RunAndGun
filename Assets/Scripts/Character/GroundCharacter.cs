@@ -17,11 +17,11 @@ public abstract class GroundCharacter : Character
             this.rb.AddForce(jumpVector);
             this.jumpCount -= 1;
             this.isJumping = true;
+            this.animator.SetTrigger("jump");
         }
-        if (isSliding){
-            this.isSliding = false;
-            this.canJump = true;
-            TryStandUp();
+        if (isSliding)
+        {
+            ExitSlide();
             Jump();
         }
     }
@@ -40,46 +40,83 @@ public abstract class GroundCharacter : Character
         }
     }
 
-    protected void MoveLeft(){
+    private bool movingLeft;
+    protected void MoveLeft()
+    {
         this.Move(Vector2.left);
+        this.animator.SetTrigger("running");
+        if (!movingLeft)
+        {
+            SetYRotation(180);
+            movingLeft = true;
+        }
     }
 
-    public void MoveRight(){
+    public void MoveRight()
+    {
+        
+        this.animator.SetTrigger("running");
         this.Move(Vector2.right);
+        if (movingLeft)
+        {
+            SetYRotation(0);
+            movingLeft = false;
+        }
     }
 
-    public override void AutonomousBehaviorLoop(){
+    private void SetYRotation(int angle)
+    {
+        Vector3 rotation = this.transform.rotation.eulerAngles;
+        rotation.y = angle;
+        this.transform.rotation = Quaternion.Euler(rotation);
+    }
+
+    public override void AutonomousBehaviorLoop()
+    {
         this.TryStandUp();
     }
 
-    bool isSliding = false;
+    public bool isSliding = false;
     float startSlideTime;
     float slideDuration = 1f;
-    public void Slide(){
-        if (!isSliding && !isJumping){
-            this.canJump = false;
-            SetPlayerRotation(90);
-            startSlideTime = Time.time;
-            this.isSliding = true;
+    public void Slide()
+    {
+        if (!isSliding && !isJumping && IsMoving)
+        {
+            StartSlide();
         }
     }
 
-    protected void TryStandUp(){
-        if (this.transform.rotation.eulerAngles.z > 45){
-            if (isSliding && Time.time > startSlideTime + slideDuration){
-                SetPlayerRotation(0);
-                isSliding = false;
-                this.canJump = true;
-            }
-            if (!isSliding){
-                SetPlayerRotation(0);
-            }
-        }
+    private void StartSlide()
+    {
+        startSlideTime = Time.time;
+        this.canJump = false;
+        this.isSliding = true;
+        this.animator.SetTrigger("slide");
+        ReverseColliderForSlide();
     }
 
-    private void SetPlayerRotation(float angle){
-        Vector3 rotation = this.transform.rotation.eulerAngles;
-        rotation.z = angle;
-        this.transform.rotation = Quaternion.Euler(rotation);
+    private void ExitSlide()
+    {
+        ReverseColliderForSlide();
+        this.isSliding = false;
+        this.canJump = true;
+    }
+
+    private void ReverseColliderForSlide()
+    {
+        Vector2 size = characterCollider.size;
+        float temp = size.y;
+        size.y = size.x;
+        size.x = temp;
+        characterCollider.size = size;
+    }
+
+    protected void TryStandUp()
+    {
+        if (isSliding && Time.time > startSlideTime + slideDuration)
+        {
+            ExitSlide();
+        }
     }
 }

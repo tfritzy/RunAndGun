@@ -7,7 +7,7 @@ public class Player : GroundCharacter
     public override void Initialize()
     {
         this.MaxJumpCount = 1;
-        this.JumpForce = 400;
+        this.JumpForce = 600;
         this.MovementAccelerationForce = 18;
         this.MaxMovementSpeed = 2;
         this.rb.gravityScale = 2;
