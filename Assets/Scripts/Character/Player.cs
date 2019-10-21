@@ -12,17 +12,19 @@ public class Player : GroundCharacter
         this.MaxMovementSpeed = 2;
         this.rb.gravityScale = 2;
         this.rb.drag = 2;
-        this.canJump = true;
+        this.CanJump = true;
         moveLeft = new MoveLeft();
         moveRight = new MoveRight();
         slide = new Slide();
         jump = new Jump();
+        attackInput = new AttackInput();
     }
 
     private MoveRight moveRight;
     private MoveLeft moveLeft;
     private Slide slide;
     private Jump jump;
+    private AttackInput attackInput;
 
     public override void ControlLoop()
     {

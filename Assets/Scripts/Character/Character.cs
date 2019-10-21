@@ -12,8 +12,9 @@ public abstract class Character : MonoBehaviour
     public float MovementAccelerationForce;
     public abstract void Initialize();
     public abstract void ControlLoop();
-
-
+    protected Weapon Weapon;
+    public string GunName = "Pistol";
+    protected GameObject Gun;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +23,12 @@ public abstract class Character : MonoBehaviour
         Initialize();
         this.animator = GetComponent<Animator>();
         characterCollider = GetComponent<BoxCollider2D>();
+        this.Gun = Instantiate(
+            (GameObject)Resources.Load($"Prefabs/Weapons/{this.GunName}"),
+            Vector3.zero,
+            new Quaternion(),
+            null);
+        this.Weapon = this.Gun.GetComponent<Weapon>();
     }
 
     // Update is called once per frame
@@ -30,6 +37,7 @@ public abstract class Character : MonoBehaviour
         ControlLoop();
         AutonomousBehaviorLoop();
         TryStartStanding();
+        AimWeapon();
     }
 
     public abstract void AutonomousBehaviorLoop();
@@ -57,6 +65,12 @@ public abstract class Character : MonoBehaviour
             this.IsMoving = false;
             this.animator.SetBool("moving", IsMoving);
         }
+    }
+
+    protected void AimWeapon(){
+        this.Weapon.SetHandsLocation(
+            this.transform.position + new Vector3(0, .2f), 
+            Camera.main.ScreenToWorldPoint(Input.mousePosition));
     }
 
 }

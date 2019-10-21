@@ -66,14 +66,10 @@ namespace Puppet2D
 		*/
 		public void CalculateIK()
 		{
-
-
 			if (numberIkBonesIndex == 1)
 				CalculateMultiIK();
 			else
 			{
-
-
 				int flipRotation;
 				if (Flip)
 					flipRotation = 1;
@@ -81,31 +77,20 @@ namespace Puppet2D
 					flipRotation = -1;
 				IK_CTRL = transform;
 
-
 				//position poleVector
-
 				root2IK = (topJointTransform.position + IK_CTRL.position) / 2;
 
-
-
 				Vector3 IK2Root = IK_CTRL.position - topJointTransform.position;
-
 				Quaternion quat;
-
 				quat = Quaternion.AngleAxis(flipRotation * 90, Vector3.forward);
 
-
 				root2IK2MiddleJoint = quat * IK2Root;
-
 				poleVector.position = root2IK - root2IK2MiddleJoint;
-
 
 				// Get Angle 
 				float angle = GetAngle();
 
-
 				// Aim Joints
-
 				Quaternion topJointAngleOffset = Quaternion.AngleAxis(angle * flipRotation, Vector3.forward);
 
 				if (!IsNaN(topJointAngleOffset))

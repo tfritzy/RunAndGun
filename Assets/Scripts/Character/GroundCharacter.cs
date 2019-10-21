@@ -4,19 +4,20 @@ using UnityEngine;
 
 public abstract class GroundCharacter : Character
 {
-    public float JumpForce;
-    private int jumpCount;
-    public int MaxJumpCount;
-    public bool canJump;
-    public bool isJumping;
+    protected float JumpForce;
+    protected int JumpCount;
+    protected int MaxJumpCount;
+    protected bool CanJump;
+    protected bool IsJumping;
+
     public void Jump()
     {
-        if (this.jumpCount > 0 && canJump)
+        if (this.JumpCount > 0 && CanJump)
         {
             Vector3 jumpVector = new Vector3(0, this.JumpForce, 0);
             this.rb.AddForce(jumpVector);
-            this.jumpCount -= 1;
-            this.isJumping = true;
+            this.JumpCount -= 1;
+            this.IsJumping = true;
             this.animator.SetTrigger("jump");
         }
         if (isSliding)
@@ -28,8 +29,8 @@ public abstract class GroundCharacter : Character
 
     private void RestoreJumpCount()
     {
-        this.jumpCount = this.MaxJumpCount;
-        this.isJumping = false;
+        this.JumpCount = this.MaxJumpCount;
+        this.IsJumping = false;
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -44,7 +45,7 @@ public abstract class GroundCharacter : Character
     protected void MoveLeft()
     {
         this.Move(Vector2.left);
-        this.animator.SetTrigger("running");
+        this.animator.SetTrigger("moving");
         if (!movingLeft)
         {
             SetYRotation(180);
@@ -54,8 +55,7 @@ public abstract class GroundCharacter : Character
 
     public void MoveRight()
     {
-        
-        this.animator.SetTrigger("running");
+        this.animator.SetTrigger("moving");
         this.Move(Vector2.right);
         if (movingLeft)
         {
@@ -81,7 +81,7 @@ public abstract class GroundCharacter : Character
     float slideDuration = 1f;
     public void Slide()
     {
-        if (!isSliding && !isJumping && IsMoving)
+        if (!isSliding && !IsJumping && IsMoving)
         {
             StartSlide();
         }
@@ -90,7 +90,7 @@ public abstract class GroundCharacter : Character
     private void StartSlide()
     {
         startSlideTime = Time.time;
-        this.canJump = false;
+        this.CanJump = false;
         this.isSliding = true;
         this.animator.SetTrigger("slide");
         ReverseColliderForSlide();
@@ -100,7 +100,7 @@ public abstract class GroundCharacter : Character
     {
         ReverseColliderForSlide();
         this.isSliding = false;
-        this.canJump = true;
+        this.CanJump = true;
     }
 
     private void ReverseColliderForSlide()
